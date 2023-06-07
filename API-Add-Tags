@@ -1,0 +1,59 @@
+import json
+import boto3
+from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Key, Attr
+
+# Defining the variables for connecting to the database
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('ass2-image-tags')  # The name of the DynamoDB table
+
+# Function for 3.2.3 (Remove tags from an image)
+
+def lambda_handler(event, context):
+    """
+    This function is used to delete items by using the update_item method
+    :param event: The JSON variables passed in
+    :param context:
+    :return: Response variable
+    """
+    try:
+        # temp = event['body']
+        jsonObject = json.loads(event['body'])
+        idkey = jsonObject['s3url']
+        idKeyJson = {'s3-url': "{}".format(idkey)}
+
+        currentList = table.get_item(Key=idKeyJson)['Item']['tags']
+        addItemList = jsonObject['tags']
+        newList = add_item_to_list(addItemList, currentList)
+
+        response = table.update_item(
+            Key=idKeyJson,
+
+            UpdateExpression="set tags=:r",
+
+            ExpressionAttributeValues={
+                ':r': newList
+            },
+
+            ReturnValues="UPDATED_NEW"
+        )
+
+        data_set = {"current List": currentList, "add Item List": addItemList, "update List": newList}
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps(data_set)
+        }
+
+    # Error handling
+    except ClientError as e:
+        print(e)
+def add_item_to_list(addItemList, currentList):
+    updatedList = currentList
+    for i in addItemList:
+        if i not in currentList:
+            updatedList.append(i)
+
+          
+
+    return updatedList
