@@ -3,13 +3,12 @@ import boto3
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key, Attr
 
-# Defining the variables for connecting to the database
 dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('ass2-image-tags')  # The name of the DynamoDB table
+table = dynamodb.Table('ass2-image-tags')  
+#name of the DynamoDB 
 
-# Function for 3.2.3 (Remove tags from an image)
 
-def lambda_handler(event, context):
+def lambda_handler(event, context):# Remove tags from an image
     """
     This function is used to delete items by using the update_item method
     :param event: The JSON variables passed in
@@ -45,7 +44,6 @@ def lambda_handler(event, context):
             'body': json.dumps(data_set)
         }
 
-    # Error handling
     except ClientError as e:
         print(e)
 
