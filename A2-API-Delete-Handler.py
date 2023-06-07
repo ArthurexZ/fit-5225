@@ -3,11 +3,10 @@ import boto3
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key, Attr
 
-# Function for 3.2.4 (Delete an image)
-
+# Delete an image
 def lambda_handler(event, context):
         dynamodb = boto3.resource('dynamodb')
-        table = dynamodb.Table('ass2-image-tags')  # The name of the DynamoDB table
+        table = dynamodb.Table('ass2-image-tags')  
         s3 = boto3.resource('s3')
 
         try:
@@ -22,8 +21,6 @@ def lambda_handler(event, context):
 
             }
    
-
-        # Error handling
         except ClientError as e:
             print(e)
             return e
